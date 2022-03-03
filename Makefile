@@ -1,6 +1,6 @@
 CXX = g++
 
-CXXFLAGS = -Wall -Wno-initialized -g
+CXXFLAGS = -Wall -Wno-uninitialized -Wno-sign-compare -g
 
 all: runMovies
 
