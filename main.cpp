@@ -14,9 +14,26 @@
 #include <queue>
 using namespace std;
 
-
+#include<sstream>
+#include<cmath>
 
 bool parseLine(string &line, string &movieName, double &movieRating);
+
+class ratingOrg {
+  public:
+    bool operator()(const string& a, const string& b) {
+      if(stod(a.substr(a.find_last_of(",") + 1)) - stod(b.substr(b.find_last_of(",") + 1)) < 0.001) {
+        if(abs(stod(a.substr(a.find_last_of(",") + 1)) - stod(b.substr(b.find_last_of(",") + 1))) < 0.001) {
+          if(a.compare(b) > 0)
+            return true;
+          else 
+            return false;
+        }
+        return true;
+      }
+      return false;
+    }
+};
 
 int main(int argc, char** argv){
   if(argc < 2){
@@ -35,33 +52,66 @@ int main(int argc, char** argv){
   }
   
 //Create an object of a STL data-structure to store all the movies
+set<string> movieSet;
 
 string line, movieName;
 double movieRating;
+stringstream ss;
 // Read each file and store the name and rating
 while (getline (movieFile, line) && parseLine(line, movieName, movieRating)){
   // Use std::string movieName and double movieRating
   // to construct your Movie objects
   // cout << movieName << " has rating " << movieRating << endl;
   // insert elements into your data structure
+  ss << movieName << ", " << setprecision(2) << movieRating;
+  movieSet.insert(ss.str());
+  ss.str(""); //wipes everything in the ss
 }
 
 movieFile.close();
 
 if(argc == 2){
   //print all the movies in ascending alphabetical order of movie names
+  set<string>::iterator it = movieSet.begin();
+  while(it != movieSet.end()) {
+    cout << *it << endl;
+    it++;
+  }
   return 0;
 }
 
+//Part 2:
+//populate the max rating heap
+vector<string> bestMovies;
+for(int i = 2; i < argc; i++) {
+  priority_queue<string, vector<string>, ratingOrg> pq;
+  string key = argv[i];
+  set<string>::iterator it = movieSet.begin();
+  while(it != movieSet.end()) {
+    if(it->substr(0, key.size()) == key)
+    {
+      pq.push(*it);
+    }
+    it++;
+  }
+  //check current best recommendation OR if pq is empty and thus no movie found
+  if(!pq.empty()) {
+    bestMovies.push_back(pq.top());
+  } else {
+    cout <<"No movies found with prefix "<< argv[i] <<endl;
+  }
+  //now print out the heap
+  while(!pq.empty()) {
+    cout << pq.top() << endl;
+    pq.pop();
+  }
 
-//  For each prefix,
-//  Find all movies that have that prefix and store them in an appropriate data structure
-//  If no movie with that prefix exists print the following message
-cout<<"No movies found with prefix "<<"<replace with prefix>"<<endl<<endl;
+  cout << endl;
+}
 
-//  For each prefix,
-//  Print the highest rated movie with that prefix if it exists.
-cout << "Best movie with prefix "<<"<replace with prefix>"<<" is: " << "replace with moview name" <<" with rating " << std::fixed << std::setprecision(1) << "replace with movie rating"<< endl;
+for(int i = 0; i < bestMovies.size(); i++) {
+  cout << "Best movie with prefix "<< argv[i+2]<<" is: " << bestMovies.at(i).substr(0, bestMovies.at(i).find_last_of(",")) <<" with rating " << std::fixed << std::setprecision(1) << bestMovies.at(i).substr(bestMovies.at(i).find_last_of(",") + 1)<< endl;
+}
     
 
 
