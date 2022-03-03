@@ -15,25 +15,10 @@
 using namespace std;
 
 #include<sstream>
-#include<cmath>
 
 bool parseLine(string &line, string &movieName, double &movieRating);
 
-class ratingOrg {
-  public:
-    bool operator()(const string& a, const string& b) {
-      if(stod(a.substr(a.find_last_of(",") + 1)) - stod(b.substr(b.find_last_of(",") + 1)) < 0.001) {
-        if(abs(stod(a.substr(a.find_last_of(",") + 1)) - stod(b.substr(b.find_last_of(",") + 1))) < 0.001) {
-          if(a.compare(b) > 0)
-            return true;
-          else 
-            return false;
-        }
-        return true;
-      }
-      return false;
-    }
-};
+#include "movies.h"
 
 int main(int argc, char** argv){
   if(argc < 2){
@@ -63,7 +48,8 @@ while (getline (movieFile, line) && parseLine(line, movieName, movieRating)){
   // to construct your Movie objects
   // cout << movieName << " has rating " << movieRating << endl;
   // insert elements into your data structure
-  ss << movieName << ", " << setprecision(2) << movieRating;
+  ss.precision(1);
+  ss << fixed << movieName << ", " << movieRating;
   movieSet.insert(ss.str());
   ss.str(""); //wipes everything in the ss
 }
@@ -110,7 +96,7 @@ for(int i = 2; i < argc; i++) {
 }
 
 for(int i = 0; i < bestMovies.size(); i++) {
-  cout << "Best movie with prefix "<< argv[i+2]<<" is: " << bestMovies.at(i).substr(0, bestMovies.at(i).find_last_of(",")) <<" with rating " << std::fixed << std::setprecision(1) << bestMovies.at(i).substr(bestMovies.at(i).find_last_of(",") + 1)<< endl;
+  cout << "Best movie with prefix "<< argv[i+2]<<" is: " << bestMovies.at(i).substr(0, bestMovies.at(i).find_last_of(",")) <<" with rating" << std::fixed << std::setprecision(1) << bestMovies.at(i).substr(bestMovies.at(i).find_last_of(",") + 1)<< endl;
 }
     
 

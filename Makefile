@@ -4,7 +4,7 @@ CXXFLAGS = -Wall -Wno-initialized -g
 
 all: runMovies
 
-runMovies: main.o
+runMovies: main.o movies.o
 	$(CXX) $(CXXFLAGS) $(LDFLAGS) $^ -o $@
 
 clean:
