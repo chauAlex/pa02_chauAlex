@@ -70,16 +70,20 @@ if(argc == 2){
 //populate the max rating heap
 vector<string> bestMovies;
 priority_queue<string, vector<string>, ratingOrg> pq;
-for(int i = 2; i < argc; i++) {
+for(int i = 2; i < argc; i++) { //for every prefix, m
   string key = argv[i];
   set<string>::iterator it = movieSet.begin();
-  while(it != movieSet.end()) {
-    if(it->substr(0, key.size()) == key)
+  while(it != movieSet.end()) { //the whole movie set, n
+    if(it->substr(0, key.size()) == key) 
     {
-      pq.push(*it);
+      pq.push(*it); //push into the heap, max of k movies that match
+      //k*log(k) where j is the size of the heap
     }
     it++;
   }
+  //n + (n-k) + klogk
+  //n + n - k + klogk
+  //n + klogk
   //check current best recommendation OR if pq is empty and thus no movie found
   if(!pq.empty()) {
     bestMovies.push_back(pq.top());
@@ -87,7 +91,7 @@ for(int i = 2; i < argc; i++) {
     cout <<"No movies found with prefix "<< argv[i] <<endl;
   }
   //now print out the heap
-  while(!pq.empty()) {
+  while(!pq.empty()) { //pop everything out the heap
     cout << pq.top() << endl;
     pq.pop();
   }
@@ -112,23 +116,22 @@ that are inputted by the user.
   will be portrayed through the Big-O notation. Lines 74 and 75 are constant time as they are just the initialization of
   a string and an iterator. Line 76 begins a while loop that will execute n times, as it is checking through the movie set
   to see which movies match the same prefix.
-    Each comparison made by the if statement on Line 77 is constant time, and the if statement evaluates to true a max
-    of k times, the number of movies that have the given prefix. The operation of pushing into the heap made
-    on Line 79 takes about O(log(j)) where j is the number of items currently stored in the heap. Thus, because this variable
-    j increases from 1 to k throughout all of the iterations of this entire while loop, the true runtime of this while loop
-    would be O(log(k!)) which we can approximate as O(klog(k)).
+    On (n-k) times: The if statement will evaluate to false, and then just increment the iterator and move on to the next iteration.
+    On  k times: The if statement evaluates to true and k is the number of movies that have the given prefix. The operation of pushing into the heap made
+    on Line 79 takes about O(log(k)) as the function for pushing something into the heap is logarithmic based on the size
+    of the heap and can be upperbounded by the max heap size of k. 
   Lines 84-88 are used to check if the heap is not empty, then to store the maximum rated value for each prefix as the best
   movie, which are all constant time operations that do not need to be considered in our Big-O.
   Lines 90-95 are used to empty out the heap and print them out from greatest to smallest rating of matching prefix movies,
-  and thus it executes k times since it iterates and empties out the contents of the heap.
+  and thus it executes k times since it iterates and empties out the contents of the heap. This operation of popping from the heap
+  will also be O(log(k)) since it has to rearrange the max heap after popping its top element.
 Finally, to print out all of the best movies the for loop on Lines 98-100 will execute m times at worst, meaning that all
 the prefixes provided had movies in the set that did have a matching prefix.
 
 Thus, in all:
-O(m(nklog(k) + k) + m)
-O(mnklog(k) + mk + m)
+O(m((n-k) + klog(k) + klog(k))) + m)
 We can now discard the functions which may grow slower over time, and conclude:
-O(mnklog(k))
+O(m(n + klog(k)))
 */
 bool parseLine(string &line, string &movieName, double &movieRating) {
   if(line.length() <= 0) return false;
